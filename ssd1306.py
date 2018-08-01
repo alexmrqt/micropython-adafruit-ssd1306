@@ -100,6 +100,116 @@ class SSD1306:
     def text(self, string, x, y, col=1):
         self.framebuf.text(string, x, y, col)
 
+    def triangle_gauge(self, x, y, value):
+        """A 16x8 triangle gauge. Value must be between 0 and 1."""
+
+        if(value > 1.0):
+            value = 1.0
+        elif(value < 0.0):
+            value = 0.0
+
+        #Draw contour of the gauge
+        for i in range(0, 16):
+            #Horizontal line
+            self.framebuf.pixel(x+i, y+7, 0xFFFFFF)
+        for i in range(0, 8):
+            #Vertical line
+            self.framebuf.pixel(x+15, y+i, 0xFFFFFF)
+            #Diagonal
+            self.framebuf.pixel(x+2*i, y+7-i, 0xFFFFFF)
+            self.framebuf.pixel(x+2*i+1, y+7-i, 0xFFFFFF)
+
+        #Fill gauge depending on value
+        num_bar = round(value*10.0)
+        for i in range(0,num_bar+1):
+            x_bar = x + i + 4
+            ymin = y + 7 - int(i/2.0) - 1
+            ymax = y + 7
+
+            for y_bar in range(ymin, ymax):
+                self.framebuf.pixel(x_bar, y_bar, 0xFFFFFF)
+
+
+    def battery_gauge(self, x, y, value):
+        """A 16x8 battery gauge. Value must be between 0 and 1."""
+
+        if(value > 1.0):
+            value = 1.0
+        elif(value < 0.0):
+            value = 0.0
+
+        #Draw contour of the gauge
+        for i in range(0, 14):
+            #Upper and lower horizontal line
+            self.framebuf.pixel(x+i, y, 0xFFFFFF)
+            self.framebuf.pixel(x+i, y+7, 0xFFFFFF)
+        for i in range(0, 8):
+            #Left Vertical line
+            self.framebuf.pixel(x, y+i, 0xFFFFFF)
+        for i in range(1, 7):
+            #Right Vertical line
+            self.framebuf.pixel(x+15, y+i, 0xFFFFFF)
+        #Finishig touches
+        self.framebuf.pixel(x+13, y+1, 0xFFFFFF)
+        self.framebuf.pixel(x+14, y+1, 0xFFFFFF)
+        self.framebuf.pixel(x+14, y+6, 0xFFFFFF)
+        self.framebuf.pixel(x+13, y+6, 0xFFFFFF)
+
+        #Fill gauge depending on value
+        num_bar = round(value*13.0)
+        for i in range(0,num_bar+1):
+            x_bar = x + i + 1
+            ymin = 1
+            ymax = 6
+            if(i == 13 or i == 14):
+                ymin = 2
+                ymax = 5
+
+            for i in range(ymin, ymax+1):
+                self.framebuf.pixel(x_bar, y+i, 0xFFFFFF)
+
+
+    def signal_gauge(self, x, y, value):
+        """A 8x8 4 level signal gauge. Value must be between 0 and 1."""
+
+        if(value > 1.0):
+            value = 1.0
+        elif(value < 0.0):
+            value = 0.0
+
+        #Fill gauge depending on value
+        num_bar = round(value*4.0)
+
+        if(num_bar > 0):
+            self.framebuf.pixel(0, y+7, 0xFFFFFF)
+
+        if(num_bar > 1):
+            self.framebuf.pixel(0, y+5, 0xFFFFFF)
+            self.framebuf.pixel(x+1, y+5, 0xFFFFFF)
+            self.framebuf.pixel(x+2, y+6, 0xFFFFFF)
+            self.framebuf.pixel(x+2, y+7, 0xFFFFFF)
+
+        if(num_bar > 2):
+            self.framebuf.pixel(0, y+3, 0xFFFFFF)
+            self.framebuf.pixel(x+1, y+3, 0xFFFFFF)
+            self.framebuf.pixel(x+2, y+3, 0xFFFFFF)
+            self.framebuf.pixel(x+3, y+4, 0xFFFFFF)
+            self.framebuf.pixel(x+4, y+5, 0xFFFFFF)
+            self.framebuf.pixel(x+4, y+6, 0xFFFFFF)
+            self.framebuf.pixel(x+4, y+7, 0xFFFFFF)
+
+        if(num_bar > 3):
+            self.framebuf.pixel(0, y+1, 0xFFFFFF)
+            self.framebuf.pixel(x+1, y+1, 0xFFFFFF)
+            self.framebuf.pixel(x+2, y+1, 0xFFFFFF)
+            self.framebuf.pixel(x+3, y+1, 0xFFFFFF)
+            self.framebuf.pixel(x+4, y+2, 0xFFFFFF)
+            self.framebuf.pixel(x+5, y+2, 0xFFFFFF)
+            self.framebuf.pixel(x+5, y+3, 0xFFFFFF)
+            self.framebuf.pixel(x+6, y+4, 0xFFFFFF)
+            self.framebuf.pixel(x+6, y+5, 0xFFFFFF)
+            self.framebuf.pixel(x+6, y+6, 0xFFFFFF)
+            self.framebuf.pixel(x+6, y+7, 0xFFFFFF)
 
 class SSD1306_I2C(SSD1306):
     def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False):
@@ -166,3 +276,4 @@ class SSD1306_SPI(SSD1306):
         self.res.low()
         time.sleep_ms(10)
         self.res.high()
+
