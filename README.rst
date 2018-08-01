@@ -5,10 +5,13 @@ This driver is based on the SSD1306 driver in the MicroPython source but differs
 This version also features three gauges symbol:
 
 #. Battery.
+
    .. image:: images/battery.png
 
 #. Signal.
+
    .. image:: images/signal.png
 
 #. Triangle.
+
    .. image:: images/triangle.png
