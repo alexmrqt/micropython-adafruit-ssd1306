@@ -181,16 +181,16 @@ class SSD1306:
         num_bar = round(value*4.0)
 
         if(num_bar > 0):
-            self.framebuf.pixel(0, y+7, 0xFFFFFF)
+            self.framebuf.pixel(x, y+7, 0xFFFFFF)
 
         if(num_bar > 1):
-            self.framebuf.pixel(0, y+5, 0xFFFFFF)
+            self.framebuf.pixel(x, y+5, 0xFFFFFF)
             self.framebuf.pixel(x+1, y+5, 0xFFFFFF)
             self.framebuf.pixel(x+2, y+6, 0xFFFFFF)
             self.framebuf.pixel(x+2, y+7, 0xFFFFFF)
 
         if(num_bar > 2):
-            self.framebuf.pixel(0, y+3, 0xFFFFFF)
+            self.framebuf.pixel(x, y+3, 0xFFFFFF)
             self.framebuf.pixel(x+1, y+3, 0xFFFFFF)
             self.framebuf.pixel(x+2, y+3, 0xFFFFFF)
             self.framebuf.pixel(x+3, y+4, 0xFFFFFF)
@@ -199,7 +199,7 @@ class SSD1306:
             self.framebuf.pixel(x+4, y+7, 0xFFFFFF)
 
         if(num_bar > 3):
-            self.framebuf.pixel(0, y+1, 0xFFFFFF)
+            self.framebuf.pixel(x, y+1, 0xFFFFFF)
             self.framebuf.pixel(x+1, y+1, 0xFFFFFF)
             self.framebuf.pixel(x+2, y+1, 0xFFFFFF)
             self.framebuf.pixel(x+3, y+1, 0xFFFFFF)
@@ -276,4 +276,3 @@ class SSD1306_SPI(SSD1306):
         self.res.low()
         time.sleep_ms(10)
         self.res.high()
-
