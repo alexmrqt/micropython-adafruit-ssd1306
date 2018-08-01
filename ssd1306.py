@@ -25,6 +25,12 @@ SET_CHARGE_PUMP     = const(0x8d)
 
 
 class SSD1306:
+    """A base class for drivers targetting SSD1306 based display.
+
+    :param width: Width of the screen in pixels.
+    :param height: Height of the screen in pixels.
+    :param external_vcc: True if an external high-voltage source is connected.
+    """
     def __init__(self, width, height, external_vcc):
         self.width = width
         self.height = height
@@ -64,9 +70,14 @@ class SSD1306:
         self.show()
 
     def poweroff(self):
+        """Turn off the display."""
         self.write_cmd(SET_DISP | 0x00)
 
     def contrast(self, contrast):
+        """Set contrast.
+
+        :param contrast: Constrast value between 0 and 255.
+        """
         self.write_cmd(SET_CONTRAST)
         self.write_cmd(contrast)
 
@@ -74,6 +85,7 @@ class SSD1306:
         self.write_cmd(SET_NORM_INV | (invert & 1))
 
     def show(self):
+        """Sends the framebuffer to the screen."""
         x0 = 0
         x1 = self.width - 1
         if self.width == 64:
@@ -89,19 +101,45 @@ class SSD1306:
         self.write_framebuf()
 
     def fill(self, col):
+        """Fill the entire screen with a particular color.
+
+        :param col: Color between 0x000000 and 0xFFFFFF.
+        """
         self.framebuf.fill(col)
 
     def pixel(self, x, y, col):
+        """Set the color of a particular pixel.
+
+        :param x: Horizontal coordinate.
+        :param y: Vertical coordinate.
+        :param col: Color between 0x000000 and 0xFFFFFF.
+        """
         self.framebuf.pixel(x, y, col)
 
     def scroll(self, dx, dy):
+        """Translates the screen content.
+
+        :param dx: Horizontal shifting value in pixels.
+        :param dy: Vertical shifting value in pixels.
+        """
         self.framebuf.scroll(dx, dy)
 
     def text(self, string, x, y, col=1):
+        """Display a text.
+
+        :param x: Horizontal coordinate.
+        :param y: Vertical coordinate.
+        :param col: Color between 0x000000 and 0xFFFFFF (optional).
+        """
         self.framebuf.text(string, x, y, col)
 
     def triangle_gauge(self, x, y, value):
-        """A 16x8 triangle gauge. Value must be between 0 and 1."""
+        """A 16x8 triangle gauge.
+
+        :param x: Horizontal coordinate.
+        :param y: Vertical coordinate.
+        :param value: Gauge value between 0.0 and 1.0.
+        """
 
         if(value > 1.0):
             value = 1.0
@@ -131,7 +169,12 @@ class SSD1306:
 
 
     def battery_gauge(self, x, y, value):
-        """A 16x8 battery gauge. Value must be between 0 and 1."""
+        """A 16x8 battery gauge.
+
+        :param x: Horizontal coordinate.
+        :param y: Vertical coordinate.
+        :param value: Gauge value between 0.0 and 1.0.
+        """
 
         if(value > 1.0):
             value = 1.0
@@ -170,7 +213,12 @@ class SSD1306:
 
 
     def signal_gauge(self, x, y, value):
-        """A 8x8 4 level signal gauge. Value must be between 0 and 1."""
+        """A 8x8 4 level signal gauge.
+
+        :param x: Horizontal coordinate.
+        :param y: Vertical coordinate.
+        :param value: Gauge value between 0.0 and 1.0.
+        """
 
         if(value > 1.0):
             value = 1.0
@@ -212,6 +260,14 @@ class SSD1306:
             self.framebuf.pixel(x+6, y+7, 0xFFFFFF)
 
 class SSD1306_I2C(SSD1306):
+    """A I2C driver for SSD1306 based display.
+
+    :param width: Width of the screen in pixels.
+    :param height: Height of the screen in pixels.
+    :param i2c: The `I2C` object to use.
+    :param address: The I2C address of the device (optional).
+    :param external_vcc: True if an external high-voltage source is connected (optional).
+    """
     def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False):
         self.i2c = i2c
         self.addr = addr
@@ -241,6 +297,17 @@ class SSD1306_I2C(SSD1306):
 
 
 class SSD1306_SPI(SSD1306):
+    """A SPI driver for SSD1306 based display.
+
+    :param width: Width of the screen in pixels.
+    :param height: Height of the screen in pixels.
+    :param spi: The `SPI` object to use.
+    :param dc: The `Pin` object of the pin connected to the `DC` line.
+    :param res: The `Pin` object of the pin connected to the `RES` line.
+    :param res: The `Pin` object of the pin connected to the `Reset` line.
+    :param cs: The `Pin` object of the pin connected to the `CS` line.
+    :param external_vcc: True if an external high-voltage source is connected (optional).
+    """
     def __init__(self, width, height, spi, dc, res, cs, external_vcc=False):
         self.rate = 10 * 1024 * 1024
         dc.init(dc.OUT, value=0)
