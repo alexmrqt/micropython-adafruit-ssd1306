@@ -267,11 +267,13 @@ class SSD1306_I2C(SSD1306):
     :param i2c: The `I2C` object to use.
     :param address: The I2C address of the device (optional).
     :param external_vcc: True if an external high-voltage source is connected (optional).
+    :param res: The `Pin` object of the pin connected to the `RES` line.
     """
-    def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False):
+    def __init__(self, width, height, i2c, addr=0x3c, external_vcc=False, res=None):
         self.i2c = i2c
         self.addr = addr
         self.temp = bytearray(2)
+        self.res = res
         # Add an extra byte to the data buffer to hold an I2C data/command byte
         # to use hardware-compatible I2C transactions.  A memoryview of the
         # buffer is used to mask this byte from the framebuffer operations
@@ -293,7 +295,12 @@ class SSD1306_I2C(SSD1306):
         self.i2c.writeto(self.addr, self.buffer)
 
     def poweron(self):
-        pass
+        if(self.res != None):
+            self.res.value(1)
+            time.sleep_ms(5)
+            self.res.value(0)
+            time.sleep_ms(10)
+            self.res.value(1)
 
 
 class SSD1306_SPI(SSD1306):
@@ -304,7 +311,6 @@ class SSD1306_SPI(SSD1306):
     :param spi: The `SPI` object to use.
     :param dc: The `Pin` object of the pin connected to the `DC` line.
     :param res: The `Pin` object of the pin connected to the `RES` line.
-    :param res: The `Pin` object of the pin connected to the `Reset` line.
     :param cs: The `Pin` object of the pin connected to the `CS` line.
     :param external_vcc: True if an external high-voltage source is connected (optional).
     """
@@ -338,8 +344,8 @@ class SSD1306_SPI(SSD1306):
         self.cs.high()
 
     def poweron(self):
-        self.res.high()
-        time.sleep_ms(1)
-        self.res.low()
+        self.res.value(1)
+        time.sleep_ms(5)
+        self.res.value(0)
         time.sleep_ms(10)
-        self.res.high()
+        self.res.value(1)
